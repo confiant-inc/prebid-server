@@ -1,0 +1,14 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "title": "Confiant Adapter Params",
+  "description": "A schema which validates params accepted by the Confiant adapter",
+
+  "type": "object",
+  "properties": {
+    "uid": {
+      "type": "string",
+      "description": "Generic Unique Identifier used as command to Confiant server"
+    }
+  },
+  "additionalProperties": false
+}

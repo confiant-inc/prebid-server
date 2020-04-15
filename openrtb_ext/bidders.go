@@ -1,3 +1,5 @@
+// Modified by Confiant
+
 package openrtb_ext
 
 import (
@@ -37,6 +39,7 @@ const (
 	BidderAdoppler         BidderName = "adoppler"
 	BidderBeachfront       BidderName = "beachfront"
 	BidderBrightroll       BidderName = "brightroll"
+	BidderConfiant         BidderName = "confiant"
 	BidderConsumable       BidderName = "consumable"
 	BidderConversant       BidderName = "conversant"
 	BidderCpmstar          BidderName = "cpmstar"
@@ -100,6 +103,7 @@ var BidderMap = map[string]BidderName{
 	"adoppler":          BidderAdoppler,
 	"beachfront":        BidderBeachfront,
 	"brightroll":        BidderBrightroll,
+	"confiant":          BidderConfiant,
 	"consumable":        BidderConsumable,
 	"conversant":        BidderConversant,
 	"cpmstar":           BidderCpmstar,
@@ -149,10 +153,12 @@ var BidderMap = map[string]BidderName{
 
 // BidderList returns the values of the BidderMap
 func BidderList() []BidderName {
-	bidders := make([]BidderName, 0, len(BidderMap))
-	for _, value := range BidderMap {
-		bidders = append(bidders, value)
-	}
+	bidders := make([]BidderName, 0, 1)
+	bidders = append(bidders, BidderConfiant)
+	// bidders := make([]BidderName, 0, len(BidderMap))
+	// for _, value := range BidderMap {
+	// 	bidders = append(bidders, value)
+	// }
 	return bidders
 }
 

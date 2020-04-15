@@ -1,0 +1,7 @@
+# Contributed by Confiant
+maintainer:
+  email: "gleb@confiant.com"
+capabilities:
+  app:
+    mediaTypes:
+      - banner

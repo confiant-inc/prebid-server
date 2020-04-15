@@ -1,0 +1,11 @@
+port: 9000
+admin_port: 6060
+# certificates_file: '~/adserver_js/legacy/js-component-tests/server/certs/confiant.com.cert'
+stored_requests:
+  filesystem: true
+cache:
+  host: '127.0.0.1:2424'
+  scheme: 'http'
+external_cache:
+  host: '127.0.0.1:2424'
+  path: 'cache'
