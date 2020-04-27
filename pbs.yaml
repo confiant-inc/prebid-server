@@ -4,8 +4,11 @@ admin_port: 6060
 stored_requests:
   filesystem: true
 cache:
-  host: '127.0.0.1:2424'
-  scheme: 'http'
+  host: 'protected-by-dev.confiant.com:2424'
+  scheme: 'https'
 external_cache:
-  host: '127.0.0.1:2424'
+  host: 'protected-by-dev.confiant.com:2424'
   path: 'cache'
+server_cert:
+  public: "confiant.com.cert"
+  private: "confiant.com.key"

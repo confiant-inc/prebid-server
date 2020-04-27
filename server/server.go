@@ -45,8 +45,8 @@ func Listen(cfg *config.Configuration, handler http.Handler, adminHandler http.H
 		glog.Errorf("Error listening for TCP connections on %s: %v for admin server", adminServer.Addr, err)
 		return
 	}
-	go runServer(mainServer, "Main", mainListener)
-	go runServer(adminServer, "Admin", adminListener)
+	go runServer(mainServer, "Main", mainListener, cfg.ServerCert.Public, cfg.ServerCert.Private)
+	go runServer(adminServer, "Admin", adminListener, cfg.ServerCert.Public, cfg.ServerCert.Private)
 
 	if cfg.Metrics.Prometheus.Port != 0 {
 		prometheusServer := newPrometheusServer(cfg, metrics)
@@ -56,7 +56,7 @@ func Listen(cfg *config.Configuration, handler http.Handler, adminHandler http.H
 			glog.Errorf("Error listening for TCP connections on %s: %v for prometheus server", adminServer.Addr, err)
 			return
 		}
-		go runServer(prometheusServer, "Prometheus", prometheusListener)
+		go runServer(prometheusServer, "Prometheus", prometheusListener, "", "")
 
 		wait(stopSignals, done, stopMain, stopAdmin, stopPrometheus)
 	} else {
@@ -87,9 +87,14 @@ func newMainServer(cfg *config.Configuration, handler http.Handler) *http.Server
 
 }
 
-func runServer(server *http.Server, name string, listener net.Listener) {
+func runServer(server *http.Server, name string, listener net.Listener, certPublicFileSpec string, certPrivateFileSpec string) {
 	glog.Infof("%s server starting on: %s", name, server.Addr)
-	err := server.Serve(listener)
+	var err error
+	if (len(certPublicFileSpec) > 0) && (len(certPrivateFileSpec) > 0) {
+		err = server.ServeTLS(listener, certPublicFileSpec, certPrivateFileSpec)
+	} else {
+		err = server.Serve(listener)
+	}
 	glog.Errorf("%s server quit with error: %v", name, err)
 }
 

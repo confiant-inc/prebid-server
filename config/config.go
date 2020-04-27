@@ -68,6 +68,8 @@ type Configuration struct {
 	PemCertsFile string `mapstructure:"certificates_file"`
 	// Custom headers to handle request timeouts from queueing infrastructure
 	RequestTimeoutHeaders RequestTimeoutHeaders `mapstructure:"request_timeout_headers"`
+	// Server SSL certificate
+	ServerCert	ServerCert	`mapstructure:"server_cert"`
 }
 
 const MIN_COOKIE_SIZE_BYTES = 500
@@ -106,6 +108,7 @@ func (cfg *Configuration) validate() configErrors {
 	errs = cfg.GDPR.validate(errs)
 	errs = cfg.CurrencyConverter.validate(errs)
 	errs = validateAdapters(cfg.Adapters, errs)
+	errs = cfg.ServerCert.validate(errs)
 	return errs
 }
 
@@ -429,6 +432,15 @@ type DefReqFiles struct {
 	FileName string `mapstructure:"name"`
 }
 
+type ServerCert struct {
+	Public string `mapstructure:"public"`
+	Private string `mapstructure:"private"`
+}
+
+func (cfg *ServerCert) validate(errs configErrors) configErrors {
+	return errs
+}
+
 // New uses viper to get our server configurations.
 func New(v *viper.Viper) (*Configuration, error) {
 	var c Configuration
@@ -505,7 +517,7 @@ func (cfg *Configuration) setDerivedDefaults() {
 	setDefaultUsersync(cfg.Adapters, openrtb_ext.BidderAppnexus, "https://ib.adnxs.com/getuid?"+url.QueryEscape(externalURL)+"%2Fsetuid%3Fbidder%3Dadnxs%26gdpr%3D{{.GDPR}}%26gdpr_consent%3D{{.GDPRConsent}}%26uid%3D%24UID")
 	setDefaultUsersync(cfg.Adapters, openrtb_ext.BidderBeachfront, "https://sync.bfmio.com/sync_s2s?gdpr={{.GDPR}}&us_privacy={{.USPrivacy}}&url="+url.QueryEscape(externalURL)+"%2Fsetuid%3Fbidder%3Dbeachfront%26gdpr%3D{{.GDPR}}%26gdpr_consent%3D{{.GDPRConsent}}%26uid%3D%5Bio_cid%5D")
 	setDefaultUsersync(cfg.Adapters, openrtb_ext.BidderBrightroll, "https://pr-bh.ybp.yahoo.com/sync/appnexusprebidserver/?gdpr={{.GDPR}}&euconsent={{.GDPRConsent}}&us_privacy={{.USPrivacy}}&url="+url.QueryEscape(externalURL)+"%2Fsetuid%3Fbidder%3Dbrightroll%26gdpr%3D{{.GDPR}}%26gdpr_consent%3D{{.GDPRConsent}}%26uid%3D%24UID")
-  setDefaultUsersync(cfg.Adapters, openrtb_ext.BidderConfiant, "http://127.0.0.1/prebid/getuid?"+url.QueryEscape(externalURL)+"%2Fsetuid%3Fbidder%3Dconfiant%26gdpr%3D{{.GDPR}}%26gdpr_consent%3D{{.GDPRConsent}}%26uid%3D%24UID")
+  setDefaultUsersync(cfg.Adapters, openrtb_ext.BidderConfiant, "https://protected-by-dev.confiant.com/prebid/getuid?"+url.QueryEscape(externalURL)+"%2Fsetuid%3Fbidder%3Dconfiant%26gdpr%3D{{.GDPR}}%26gdpr_consent%3D{{.GDPRConsent}}%26uid%3D%24UID")
 	setDefaultUsersync(cfg.Adapters, openrtb_ext.BidderConsumable, "https://e.serverbid.com/udb/9969/match?gdpr={{.GDPR}}&euconsent={{.GDPRConsent}}&us_privacy={{.USPrivacy}}&redir="+url.QueryEscape(externalURL)+"%2Fsetuid%3Fbidder%3Dconsumable%26gdpr%3D{{.GDPR}}%26gdpr_consent%3D{{.GDPRConsent}}%26uid%3D")
 	setDefaultUsersync(cfg.Adapters, openrtb_ext.BidderConversant, "https://prebid-match.dotomi.com/match/bounce/current?rurl="+url.QueryEscape(externalURL)+"%2Fsetuid%3Fbidder%3Dconversant%26gdpr%3D{{.GDPR}}%26gdpr_consent%3D{{.GDPRConsent}}%26networkId%3D72582%26version%3D1%26uid%3D")
 	setDefaultUsersync(cfg.Adapters, openrtb_ext.BidderCpmstar, "https://server.cpmstar.com/usersync.aspx?gdpr={{.GDPR}}&consent={{.GDPRConsent}}&us_privacy={{.USPrivacy}}&redirect="+url.QueryEscape(externalURL)+"%2Fsetuid%3Fbidder%3Dcpmstar%26gdpr%3D{{.GDPR}}%26gdpr_consent%3D{{.GDPRConsent}}%26uid%3D%24UID")
@@ -698,7 +710,7 @@ func SetupViper(v *viper.Viper, filename string) {
 	v.SetDefault("adapters.appnexus.platform_id", "5")
 	v.SetDefault("adapters.beachfront.endpoint", "https://display.bfmio.com/prebid_display")
 	v.SetDefault("adapters.brightroll.endpoint", "http://east-bid.ybp.yahoo.com/bid/appnexuspbs")
-	v.SetDefault("adapters.confiant.endpoint", "http://127.0.0.1/prebid/auction")
+	v.SetDefault("adapters.confiant.endpoint", "https://protected-by-dev.confiant.com/prebid/auction")
 	v.SetDefault("adapters.consumable.endpoint", "https://e.serverbid.com/api/v2")
 	v.SetDefault("adapters.conversant.endpoint", "http://api.hb.ad.cpe.dotomi.com/s2s/header/24")
 	v.SetDefault("adapters.cpmstar.endpoint", "https://server.cpmstar.com/openrtbbidrq.aspx")
@@ -763,6 +775,8 @@ func SetupViper(v *viper.Viper, filename string) {
 	v.SetDefault("blacklisted_accts", []string{""})
 	v.SetDefault("account_required", false)
 	v.SetDefault("certificates_file", "")
+	v.SetDefault("server_cert.public", "tls.crt")
+	v.SetDefault("server_cert.private", "tls.key")
 
 	v.SetDefault("request_timeout_headers.request_time_in_queue", "")
 	v.SetDefault("request_timeout_headers.request_timeout_in_queue", "")
