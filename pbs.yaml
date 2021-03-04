@@ -10,5 +10,5 @@ external_cache:
   host: 'protected-by-dev.confiant.com:2424'
   path: 'cache'
 server_cert:
-  public: "confiant.com.cert"
-  private: "confiant.com.key"
+  public: "./certs.novcs/confiant.com.cert"
+  private: "./certs.novcs/confiant.com.key"

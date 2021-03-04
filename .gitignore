@@ -57,3 +57,7 @@ analytics/filesystem/testFiles/
 # Emacs
 
 *~
+
+# Manual
+
+*.novcs/
